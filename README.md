@@ -15,6 +15,12 @@ The API and behavior may change as I learn more. I have tested the core history
 behavior and a minified browser build, but this has not yet seen broad use. Bug
 reports, corrections, suggestions, and patient feedback are very welcome.
 
+## Demo
+
+Try the debugger in the [Maybe List demo](https://gleam-maybe-list.vercel.app).
+Change the list, then open **Time Travel** in the lower-right corner to move
+through the recorded states. The demo uses a minified production build.
+
 ```sh
 gleam add timetravel@0.1
 ```
