@@ -21,8 +21,16 @@ Try the debugger in the [Maybe List demo](https://gleam-maybe-list.vercel.app).
 Change the list, then open **Time Travel** in the lower-right corner to move
 through the recorded states. The demo uses a minified production build.
 
-```sh
-gleam add timetravel@0.1
+## Installation
+
+This experiment is not published on Hex yet. Add the tagged Git dependency to
+your `gleam.toml`:
+
+```toml
+timetravel = {
+  git = "https://github.com/bmehder/timetravel.git",
+  ref = "v0.1.0",
+}
 ```
 
 ## Usage
