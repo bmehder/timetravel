@@ -4,6 +4,17 @@ Development-only time travel and state inspection for Lustre applications.
 It records application messages and model snapshots, lets you navigate through
 the history, and suppresses effects while you inspect an earlier state.
 
+## Experimental status
+
+This is a very early experiment, created while I am learning Gleam, Lustre, and
+the process of publishing packages. It grew out of a debugger I built for a
+small Lustre application and is being shared in case it is useful to someone
+else.
+
+The API and behavior may change as I learn more. I have tested the core history
+behavior and a minified browser build, but this has not yet seen broad use. Bug
+reports, corrections, suggestions, and patient feedback are very welcome.
+
 ```sh
 gleam add timetravel@0.1
 ```

@@ -1,4 +1,27 @@
+# Gleam build artifacts
+/build/
+
+# Lustre's downloaded tools and development cache
+/.lustre/
+
+# Generated production bundles
+/dist/
+
+# Erlang crash and analysis files
+erl_crash.dump
+rebar3.crashdump
 *.beam
 *.ez
-/build
-erl_crash.dump
+*.plt
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
