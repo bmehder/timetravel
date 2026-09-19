@@ -86,6 +86,14 @@ let app =
 The ordinary `application` function remains convenient for unminified local
 development builds.
 
+## Acknowledgements
+
+This experiment was informed by and builds on ideas from
+[Tardis](https://github.com/ghivert/tardis), an earlier time-travelling
+debugger for Lustre by [ghivert](https://github.com/ghivert). Many thanks for
+showing what this kind of tooling can look like in the Gleam and Lustre
+ecosystem.
+
 ## Development
 
 ```sh
