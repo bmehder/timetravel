@@ -4,16 +4,14 @@ Development-only time travel and state inspection for Lustre applications.
 It records application messages and model snapshots, lets you navigate through
 the history, and suppresses effects while you inspect an earlier state.
 
-## Experimental status
+## Pre-1.0 status
 
-This is a very early experiment, created while I am learning Gleam, Lustre, and
-the process of publishing packages. It grew out of a debugger I built for a
-small Lustre application and is being shared in case it is useful to someone
-else.
+This package grew out of a debugger built for a small Lustre application. Its
+core history behavior is covered by unit tests, and independent example
+applications verify both minified and unminified browser builds.
 
-The API and behavior may change as I learn more. I have tested the core history
-behavior and a minified browser build, but this has not yet seen broad use. Bug
-reports, corrections, suggestions, and patient feedback are very welcome.
+The API may still change before 1.0 as it sees broader use. Bug reports,
+corrections, and suggestions are welcome.
 
 ## Demo
 
@@ -24,14 +22,10 @@ so the automatic value inspector can retain Gleam constructor names.
 
 ## Installation
 
-This experiment is not published on Hex yet. Add the tagged Git dependency to
-your `gleam.toml`:
+Add the package to a Lustre project as a development dependency:
 
-```toml
-timetravel = {
-  git = "https://github.com/bmehder/timetravel.git",
-  ref = "v0.2.0",
-}
+```sh
+gleam add --dev timetravel
 ```
 
 ## Usage
@@ -113,7 +107,15 @@ ecosystem.
 ```sh
 gleam format --check src test
 gleam test
+./integration/run.sh
 ```
+
+The integration command builds three small, independent Lustre applications
+against the local package. Together they exercise the zero-configuration API,
+managed effects, custom minification-safe formatters, and both unminified and
+minified browser bundles. Generated dependencies and build output remain inside
+the integration projects and are ignored by Git. The integration projects use
+the system installation of Bun.
 
 ## License
 

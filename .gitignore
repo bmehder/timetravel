@@ -7,6 +7,12 @@
 # Generated production bundles
 /dist/
 
+# Integration-test artifacts
+/integration/*/.lustre/
+/integration/*/build/
+/integration/*/dist/
+/integration/*/dist-minified/
+
 # Erlang crash and analysis files
 erl_crash.dump
 rebar3.crashdump

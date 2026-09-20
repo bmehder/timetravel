@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Gleam and Erlang
+        uses: erlef/setup-beam@v1
+        with:
+          gleam-version: "1.18.1"
+          otp-version: "28"
+          rebar3-version: "3"
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.2.22"
+
+      - name: Download dependencies
+        run: gleam deps download
+
+      - name: Check formatting
+        run: gleam format --check src test integration/*/src
+
+      - name: Run unit tests
+        run: gleam test
+
+      - name: Run integration builds
+        run: ./integration/run.sh
+
+      - name: Build documentation
+        run: gleam docs build
+
+      - name: Build Hex package
+        run: gleam export hex-tarball

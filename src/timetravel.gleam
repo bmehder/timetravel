@@ -65,10 +65,16 @@ pub type Message(app_message) {
 }
 
 type Snapshot(model, app_message) {
+  // The model immediately before `message` was handled. Keeping the message
+  // beside that model lets Back and Forward move without replaying updates.
   Snapshot(model: model, message: app_message)
 }
 
 /// The wrapped application model and its recorded history.
+///
+/// `past` is stored newest-first so recording and stepping backward are cheap.
+/// `future` is stored with the next state first. Together they form the full
+/// timeline around `current`.
 pub opaque type Model(model, app_message) {
   Model(
     current: model,
@@ -173,6 +179,8 @@ fn update_app(
   app_update: fn(model, app_message) -> #(model, Effect(app_message)),
 ) -> #(Model(model, app_message), Effect(Message(app_message))) {
   case model.future {
+    // While inspecting history, ignore application messages so the displayed
+    // snapshot cannot diverge from the timeline. Inspector controls still work.
     [_, ..] -> #(model, effect.none())
     [] -> {
       let #(updated, app_effect) = app_update(model.current, message)
@@ -180,9 +188,13 @@ fn update_app(
         Model(
           ..model,
           current: updated,
-          past: [Snapshot(model.current, message), ..model.past]
+          // Prepending makes the newest transition cheap to record. `take`
+            // consequently discards the oldest transition when the limit is hit.
+            past: [Snapshot(model.current, message), ..model.past]
             |> list.take(history_limit),
         )
+      // Effects run only when a new present-day transition is recorded. Moving
+      // through history never replays HTTP requests, storage writes, or timers.
       #(updated_model, effect.map(app_effect, App))
     }
   }
@@ -394,6 +406,8 @@ fn timeline(
   formatters: Formatters(model, app_message),
 ) -> Element(Message(app_message)) {
   let current = list.length(model.past)
+  // The UI needs chronological order, unlike the newest-first representation
+  // used by `past` for efficient updates.
   let steps = list.append(list.reverse(model.past), model.future)
   let entries =
     steps

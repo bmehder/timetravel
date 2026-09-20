@@ -1,0 +1,18 @@
+name = "counter"
+version = "1.0.0"
+target = "javascript"
+
+[dependencies]
+gleam_stdlib = ">= 1.0.0 and < 2.0.0"
+lustre = ">= 5.7.1 and < 6.0.0"
+timetravel = { path = "../.." }
+
+[dev-dependencies]
+lustre_dev_tools = ">= 2.3.6 and < 3.0.0"
+
+[tools.lustre.bin]
+bun = "system"
+
+[tools.lustre.build]
+minify = false
+no_tailwind = true

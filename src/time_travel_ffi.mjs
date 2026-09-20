@@ -1,5 +1,7 @@
 const minimumVisible = 64;
 
+// Module state intentionally survives the inspector being closed and rendered
+// again, restoring the user's most recent size and position.
 let savedLayout = null;
 
 export function attachDragging(root) {
@@ -55,6 +57,9 @@ export function attachDragging(root) {
     handle.setPointerCapture(event.pointerId);
 
     const move = (moveEvent) => {
+      // Keep only a small portion visible rather than clamping the whole panel
+      // inside the viewport. This lets the debugger be moved out of the app's
+      // way without making it impossible to retrieve.
       const minX = minimumVisible - panel.offsetWidth;
       const maxX = window.innerWidth - minimumVisible;
       const maxY = window.innerHeight - minimumVisible;

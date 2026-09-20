@@ -1,6 +1,8 @@
 const indentation = 2;
 const maximumDepth = 20;
 
+// Gleam values compile to JavaScript objects and constructor classes. This is
+// deliberately a development convenience: minifiers may rename those classes.
 export function inspectValue(value) {
   return format(value, 0, new WeakSet());
 }
