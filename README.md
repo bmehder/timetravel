@@ -19,7 +19,8 @@ reports, corrections, suggestions, and patient feedback are very welcome.
 
 Try the debugger in the [Maybe List demo](https://gleam-maybe-list.vercel.app).
 Change the list, then open **Time Travel** in the lower-right corner to move
-through the recorded states. The demo uses a minified production build.
+through the recorded states. The public showcase is intentionally unminified
+so the automatic value inspector can retain Gleam constructor names.
 
 ## Installation
 
@@ -29,7 +30,7 @@ your `gleam.toml`:
 ```toml
 timetravel = {
   git = "https://github.com/bmehder/timetravel.git",
-  ref = "v0.1.0",
+  ref = "v0.2.0",
 }
 ```
 
@@ -56,9 +57,8 @@ Start that entry point with Lustre Dev Tools:
 gleam run -m lustre/dev start my_app_dev
 ```
 
-The inspector UI uses Tailwind utility classes. Make sure the development
-entry point is covered by your Tailwind build (for example, with a matching
-`src/my_app_dev.css` file).
+The inspector is self-contained and injects its own prefixed CSS. It does not
+require Tailwind or any stylesheet configuration in the host application.
 
 The latest 100 transitions are retained. Selecting an earlier transition
 restores its recorded model without replaying messages, HTTP requests, or other

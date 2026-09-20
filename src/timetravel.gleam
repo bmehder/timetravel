@@ -13,6 +13,47 @@ import timetravel/internal/inspect
 
 const history_limit = 100
 
+const stylesheet = "
+.tt-app--past { pointer-events: none; opacity: 0.7; }
+.tt-root, .tt-root *, .tt-root *::before, .tt-root *::after { box-sizing: border-box; }
+.tt-root { position: fixed; right: 1rem; bottom: 1rem; z-index: 2147483647; display: flex; max-height: calc(100vh - 2rem); flex-direction: column; align-items: flex-end; gap: 0.5rem; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace; }
+.tt-root button { margin: 0; font: inherit; }
+.tt-toggle { display: flex; height: 2.75rem; align-items: center; gap: 0.5rem; border: 0; border-radius: 9999px; background: #0c0a09; padding: 0 1rem; color: #bef264; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.25), 0 8px 10px -6px rgb(0 0 0 / 0.25); cursor: pointer; font-size: 0.75rem; font-weight: 700; transition: background-color 150ms, box-shadow 150ms; }
+.tt-toggle:hover { background: #292524; }
+.tt-toggle:focus-visible { outline: 2px solid #a3e635; outline-offset: 2px; }
+.tt-toggle-icon { font-size: 1.125rem; line-height: 1; }
+.tt-panel { position: fixed; right: 1rem; bottom: 4rem; display: flex; width: 48rem; min-width: 20rem; max-width: calc(100vw - 2rem); height: 44rem; min-height: 20rem; max-height: calc(100vh - 5rem); resize: both; flex-direction: column; overflow: auto; border: 1px solid #44403c; border-radius: 1rem; background: rgb(12 10 9 / 0.9); color: #f5f5f4; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5); backdrop-filter: blur(4px); }
+.tt-header { display: flex; cursor: move; touch-action: none; user-select: none; align-items: center; justify-content: space-between; border-bottom: 1px solid #292524; padding: 0.75rem 1rem; }
+.tt-eyebrow { margin: 0; color: #a3e635; font-size: 0.625rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; }
+.tt-title { margin: 0.125rem 0 0; font-size: 0.875rem; font-weight: 700; }
+.tt-status { display: flex; align-items: center; gap: 0.75rem; }
+.tt-position { margin: 0; color: #78716c; font-size: 0.6875rem; }
+.tt-close { display: flex; width: 1.75rem; height: 1.75rem; align-items: center; justify-content: center; border: 0; border-radius: 0.25rem; background: transparent; color: #78716c; cursor: pointer; font-size: 1.125rem; transition: background-color 150ms, color 150ms; }
+.tt-close:hover { background: #292524; color: #f5f5f4; }
+.tt-controls { display: flex; gap: 0.5rem; border-bottom: 1px solid #292524; padding: 0.75rem; }
+.tt-control { display: flex; width: 2.25rem; height: 2rem; align-items: center; justify-content: center; border: 0; border-radius: 0.5rem; background: #292524; color: inherit; cursor: pointer; font-size: 0.875rem; transition: background-color 150ms, opacity 150ms; }
+.tt-control:hover:not(:disabled) { background: #44403c; }
+.tt-control:disabled, .tt-return:disabled { cursor: not-allowed; opacity: 0.3; }
+.tt-return { margin-left: auto; border: 1px solid #44403c; border-radius: 0.5rem; background: transparent; padding: 0.375rem 0.75rem; color: #d6d3d1; cursor: pointer; font-size: 0.6875rem; font-weight: 700; transition: border-color 150ms, color 150ms, opacity 150ms; }
+.tt-return:hover:not(:disabled) { border-color: #84cc16; color: #bef264; }
+.tt-grid { display: grid; min-height: 0; flex: 1; grid-template-columns: minmax(12rem, max-content) minmax(20rem, max-content) minmax(28rem, 1fr); }
+.tt-timeline { min-width: 10rem; overflow: auto; border-right: 1px solid #292524; padding: 0.75rem; }
+.tt-column-label { margin: 0 0 0.5rem; color: #57534e; font-size: 0.625rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+.tt-timeline-list { margin: 0; padding: 0; list-style: none; font-size: 0.625rem; }
+.tt-timeline-list > li + li { margin-top: 0.25rem; }
+.tt-timeline-entry { display: flex; width: 100%; align-items: center; gap: 0.5rem; border: 0; border-radius: 0.25rem; background: transparent; padding: 0.25rem 0.375rem; color: #78716c; cursor: pointer; text-align: left; transition: background-color 150ms, color 150ms; }
+.tt-timeline-entry:hover { background: #292524; color: #e7e5e4; }
+.tt-timeline-entry--selected { background: #292524; color: #a3e635; font-weight: 700; }
+.tt-timeline-position { width: 1.25rem; flex-shrink: 0; color: #57534e; text-align: right; }
+.tt-inspection { overflow: auto; border-left: 1px solid #292524; }
+.tt-inspection--message { min-width: 18rem; }
+.tt-inspection--model { min-width: 24rem; }
+.tt-inspection-heading { position: sticky; top: 0; margin: 0; border-bottom: 1px solid #292524; background: rgb(12 10 9 / 0.9); padding: 0.5rem 1rem; color: #a3e635; font-size: 0.625rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; backdrop-filter: blur(4px); }
+.tt-inspection-value { min-height: 12rem; margin: 0; padding: 1rem; color: #d6d3d1; font: 0.75rem/1.25rem ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace; }
+.tt-inspection-value--message { white-space: pre; }
+.tt-inspection-value--model { overflow-wrap: break-word; white-space: pre-wrap; }
+"
+
 /// Messages handled by the time-travel wrapper.
 pub type Message(app_message) {
   App(app_message)
@@ -211,10 +252,12 @@ pub fn view_with_formatters(
   formatters formatters: Formatters(model, app_message),
 ) -> Element(Message(app_message)) {
   html.div([], [
+    html.style([], stylesheet),
     html.div(
       [
+        attribute.class("tt-app"),
         attribute.classes([
-          #("pointer-events-none opacity-70", model.future != []),
+          #("tt-app--past", model.future != []),
         ]),
       ],
       [element.map(app_view(model.current), App)],
@@ -229,9 +272,7 @@ fn inspector(
 ) -> Element(Message(app_message)) {
   html.aside(
     [
-      attribute.class(
-        "fixed bottom-4 right-4 z-50 flex max-h-[calc(100vh-2rem)] flex-col items-end gap-2 font-mono",
-      ),
+      attribute.class("tt-root"),
     ],
     [
       case model.inspector_open {
@@ -243,12 +284,10 @@ fn inspector(
           attribute.type_("button"),
           event.on_click(ToggleInspector),
           attribute.aria_label("Toggle time travel debugger"),
-          attribute.class(
-            "flex h-11 items-center gap-2 rounded-full bg-stone-950 px-4 text-xs font-bold text-lime-300 shadow-xl transition hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-lime-400",
-          ),
+          attribute.class("tt-toggle"),
         ],
         [
-          html.span([attribute.class("text-lg leading-none")], [html.text("⏪")]),
+          html.span([attribute.class("tt-toggle-icon")], [html.text("⏪")]),
           html.text("TIME TRAVEL"),
         ],
       ),
@@ -264,37 +303,31 @@ fn inspector_panel(
   html.div(
     [
       attribute.data("time-travel-panel", ""),
-      attribute.class(
-        "fixed bottom-16 right-4 flex h-[44rem] max-h-[calc(100vh-5rem)] min-h-80 w-[48rem] max-w-[calc(100vw-2rem)] min-w-80 resize flex-col overflow-auto rounded-2xl border border-stone-700 bg-stone-950/90 text-stone-100 shadow-2xl backdrop-blur-sm",
-      ),
+      attribute.class("tt-panel"),
     ],
     [
       html.div(
         [
           attribute.data("time-travel-drag-handle", ""),
-          attribute.class(
-            "flex cursor-move touch-none select-none items-center justify-between border-b border-stone-800 px-4 py-3",
-          ),
+          attribute.class("tt-header"),
         ],
         [
           html.div([], [
             html.p(
               [
-                attribute.class(
-                  "text-[10px] font-bold uppercase tracking-[0.2em] text-lime-400",
-                ),
+                attribute.class("tt-eyebrow"),
               ],
               [html.text("Development")],
             ),
-            html.p([attribute.class("mt-0.5 text-sm font-bold")], [
+            html.p([attribute.class("tt-title")], [
               html.text(case travelling {
                 True -> "Viewing the past"
                 False -> "Present state"
               }),
             ]),
           ]),
-          html.div([attribute.class("flex items-center gap-3")], [
-            html.p([attribute.class("text-[11px] text-stone-500")], [
+          html.div([attribute.class("tt-status")], [
+            html.p([attribute.class("tt-position")], [
               html.text(
                 int.to_string(list.length(model.past))
                 <> " / "
@@ -308,16 +341,14 @@ fn inspector_panel(
                 attribute.type_("button"),
                 event.on_click(ToggleInspector),
                 attribute.aria_label("Close time travel debugger"),
-                attribute.class(
-                  "flex h-7 w-7 items-center justify-center rounded text-lg text-stone-500 transition hover:bg-stone-800 hover:text-stone-100",
-                ),
+                attribute.class("tt-close"),
               ],
               [html.text("×")],
             ),
           ]),
         ],
       ),
-      html.div([attribute.class("flex gap-2 border-b border-stone-800 p-3")], [
+      html.div([attribute.class("tt-controls")], [
         control_button("←", "Previous state", Back, model.past == []),
         control_button("→", "Next state", Forward, model.future == []),
         html.button(
@@ -325,18 +356,14 @@ fn inspector_panel(
             attribute.type_("button"),
             event.on_click(ReturnToPresent),
             attribute.disabled(!travelling),
-            attribute.class(
-              "ml-auto rounded-lg border border-stone-700 px-3 py-1.5 text-[11px] font-bold text-stone-300 transition hover:border-lime-500 hover:text-lime-300 disabled:cursor-not-allowed disabled:opacity-30",
-            ),
+            attribute.class("tt-return"),
           ],
           [html.text("BACK TO THE FUTURE")],
         ),
       ]),
       html.div(
         [
-          attribute.class(
-            "grid min-h-0 flex-1 grid-cols-[max-content_max-content_minmax(0,1fr)]",
-          ),
+          attribute.class("tt-grid"),
         ],
         [timeline(model, formatters), ..inspection(model, formatters)],
       ),
@@ -356,9 +383,7 @@ fn control_button(
       event.on_click(message),
       attribute.disabled(disabled),
       attribute.aria_label(label),
-      attribute.class(
-        "flex h-8 w-9 items-center justify-center rounded-lg bg-stone-800 text-sm transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-30",
-      ),
+      attribute.class("tt-control"),
     ],
     [html.text(icon)],
   )
@@ -382,20 +407,15 @@ fn timeline(
     })
     |> list.prepend(timeline_entry(0, "Init", current == 0))
 
-  html.div(
-    [attribute.class("min-w-40 overflow-auto border-r border-stone-800 p-3")],
-    [
-      html.p(
-        [
-          attribute.class(
-            "mb-2 text-[10px] font-bold uppercase tracking-wider text-stone-600",
-          ),
-        ],
-        [html.text("Timeline")],
-      ),
-      html.ol([attribute.class("space-y-1 text-[10px]")], entries),
-    ],
-  )
+  html.div([attribute.class("tt-timeline")], [
+    html.p(
+      [
+        attribute.class("tt-column-label"),
+      ],
+      [html.text("Timeline")],
+    ),
+    html.ol([attribute.class("tt-timeline-list")], entries),
+  ])
 }
 
 fn timeline_entry(
@@ -408,16 +428,13 @@ fn timeline_entry(
       [
         attribute.type_("button"),
         event.on_click(GoTo(position)),
-        attribute.class(
-          "flex w-full items-center gap-2 rounded px-1.5 py-1 text-left transition hover:bg-stone-800 hover:text-stone-200",
-        ),
+        attribute.class("tt-timeline-entry"),
         attribute.classes([
-          #("bg-stone-800 font-bold text-lime-400", selected),
-          #("text-stone-500", !selected),
+          #("tt-timeline-entry--selected", selected),
         ]),
       ],
       [
-        html.span([attribute.class("w-5 shrink-0 text-right text-stone-600")], [
+        html.span([attribute.class("tt-timeline-position")], [
           html.text(int.to_string(position)),
         ]),
         html.span([], [html.text(label)]),
@@ -453,26 +470,22 @@ fn inspected_value(
   html.section(
     [
       attribute.class(case fit_content {
-        True -> "min-w-72 overflow-auto border-l border-stone-800"
-        False -> "min-w-96 overflow-auto border-l border-stone-800"
+        True -> "tt-inspection tt-inspection--message"
+        False -> "tt-inspection tt-inspection--model"
       }),
     ],
     [
       html.h3(
         [
-          attribute.class(
-            "sticky top-0 border-b border-stone-800 bg-stone-950/90 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-lime-400 backdrop-blur-sm",
-          ),
+          attribute.class("tt-inspection-heading"),
         ],
         [html.text(label)],
       ),
       html.pre(
         [
           attribute.class(case fit_content {
-            True ->
-              "min-h-48 whitespace-pre p-4 text-xs leading-5 text-stone-300"
-            False ->
-              "min-h-48 whitespace-pre-wrap break-words p-4 text-xs leading-5 text-stone-300"
+            True -> "tt-inspection-value tt-inspection-value--message"
+            False -> "tt-inspection-value tt-inspection-value--model"
           }),
         ],
         [html.text(value)],
