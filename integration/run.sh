@@ -7,6 +7,10 @@ root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 for project in counter effects formatted
 do
   project_dir="$root/integration/$project"
+  entry="$project"
+  if [ "$project" = "counter" ]; then
+    entry="counter_dev"
+  fi
 
   echo "==> $project: dependencies"
   (cd "$project_dir" && gleam deps download)
@@ -15,15 +19,15 @@ do
   (cd "$project_dir" && gleam check --target javascript)
 
   echo "==> $project: unminified browser build"
-  (cd "$project_dir" && gleam run -m lustre/dev build --outdir=dist)
+  (cd "$project_dir" && gleam run -m lustre/dev build "$entry" --outdir=dist)
 
   echo "==> $project: minified browser build"
-  (cd "$project_dir" && gleam run -m lustre/dev build --minify --outdir=dist-minified)
+  (cd "$project_dir" && gleam run -m lustre/dev build "$entry" --minify --outdir=dist-minified)
 
   test -f "$project_dir/dist/index.html"
-  test -f "$project_dir/dist/$project.js"
+  test -f "$project_dir/dist/$entry.js"
   test -f "$project_dir/dist-minified/index.html"
-  test -f "$project_dir/dist-minified/$project.js"
+  test -f "$project_dir/dist-minified/$entry.js"
 done
 
 echo "All timetravel integration projects built successfully."

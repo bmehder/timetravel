@@ -31,7 +31,8 @@ gleam add --dev timetravel
 ## Usage
 
 Keep your production entry point unchanged and add a separate development entry
-point:
+point at `dev/my_app_dev.gleam`. Modules in Gleam's `dev` directory can import
+development dependencies without including them in production builds:
 
 ```gleam
 import lustre

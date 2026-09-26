@@ -33,7 +33,7 @@ jobs:
         run: gleam deps download
 
       - name: Check formatting
-        run: gleam format --check src test integration/*/src
+        run: gleam format --check src test integration/*/src integration/counter/dev
 
       - name: Run unit tests
         run: gleam test

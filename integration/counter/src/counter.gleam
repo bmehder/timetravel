@@ -1,36 +1,29 @@
 import gleam/int
-import lustre
 import lustre/effect
+import lustre/element.{type Element}
 import lustre/element/html
 import lustre/event
-import timetravel
 
-type Message {
+pub type Message {
   Increment
   Decrement
 }
 
-fn init(_arguments) {
+pub fn init(_arguments) {
   #(0, effect.none())
 }
 
-fn update(model, message) {
+pub fn update(model, message) {
   case message {
     Increment -> #(model + 1, effect.none())
     Decrement -> #(model - 1, effect.none())
   }
 }
 
-fn view(model) {
+pub fn view(model) -> Element(Message) {
   html.main([], [
     html.button([event.on_click(Decrement)], [html.text("-")]),
     html.p([], [html.text(int.to_string(model))]),
     html.button([event.on_click(Increment)], [html.text("+")]),
   ])
-}
-
-pub fn main() -> Nil {
-  let app = timetravel.application(init, update, view)
-  let assert Ok(_) = lustre.start(app, "#app", Nil)
-  Nil
 }
